@@ -1,12 +1,11 @@
 #include "remove.h"
+#include "notification_sequence.h"
 
 #include <euicc/es10b.h>
 #include <lpac/utils.h>
 
-#include <errno.h>
 #include <main.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -75,19 +74,13 @@ static int applet_main(int argc, char **argv) {
         }
     } else {
         for (int i = optind; i < argc; i++) {
-            unsigned long seqNumber;
-
-            errno = 0;
-            char *str_end;
-            seqNumber = strtoul(argv[i], &str_end, 10);
-            // Although POSIX said user should check errno instead of return value,
-            // but errno may not be set when no conversion is performed according to C99.
-            // Check nptr is same as str_end to ensure there is no conversion.
-            if (argv[i] == str_end || errno != 0) {
-                continue;
+            uint32_t seqNumber;
+            if (!notification_parse_sequence_number(argv[i], &seqNumber)) {
+                jprint_error("seqNumber", "invalid unsigned 32-bit decimal");
+                return -1;
             }
 
-            if (_delete_single((uint32_t)seqNumber)) {
+            if (_delete_single(seqNumber)) {
                 fret = -1;
                 break;
             }

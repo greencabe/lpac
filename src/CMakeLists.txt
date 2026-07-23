@@ -8,6 +8,7 @@ target_sources(
         applet/chip/purge.c
         applet/notification/list.c
         applet/notification/notification_common.c
+        applet/notification/notification_sequence.c
         applet/notification/process.c
         applet/notification/remove.c
         applet/notification/replay.c
